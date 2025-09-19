@@ -1,103 +1,160 @@
-import Image from "next/image";
+import Link from 'next/link'
+import { Mail, Calendar, ArrowRight, Star, Zap, Users, Sparkles, Smartphone } from 'lucide-react'
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const tools = [
+    {
+      name: 'Email Builder',
+      description: 'Create beautiful, effective email templates for your campaigns with our intuitive drag-and-drop interface',
+      href: '/email-builder',
+      icon: Mail,
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50',
+      borderColor: 'border-blue-200',
+      hoverColor: 'hover:border-blue-300',
+    },
+    {
+      name: 'Rally Generator',
+      description: 'Build engaging rally pages with drag-and-drop components that convert visitors into supporters',
+      href: '/rally-generator',
+      icon: Calendar,
+      color: 'text-green-600',
+      bgColor: 'bg-green-50',
+      borderColor: 'border-green-200',
+      hoverColor: 'hover:border-green-300',
+    },
+  ]
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const features = [
+    {
+      name: 'Easy to Use',
+      description: 'Intuitive interface that requires no technical skills',
+      icon: Star,
+    },
+    {
+      name: 'Fast Results',
+      description: 'Create professional content in minutes, not hours',
+      icon: Zap,
+    },
+    {
+      name: 'Community Focused',
+      description: 'Designed specifically for grassroots organizations',
+      icon: Users,
+    },
+    {
+      name: 'Mobile Friendly',
+      description: 'All templates work perfectly on phones and tablets',
+      icon: Smartphone,
+    },
+  ]
+
+  return (
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-white to-gray-50">
+      <div className="flex-grow">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Hero Section */}
+          <div className="text-center mb-16 animate-fade-in">
+            <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl md:text-6xl mb-6">
+              <span className="block">Grassroots Digital</span>
+              <span className="block bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+                Organizing Toolkit
+              </span>
+            </h1>
+            <p className="mt-4 text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Powerful tools designed to help nonprofits and community organizations amplify their message, 
+              engage supporters, and drive meaningful change.
+            </p>
+            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/email-builder"
+                className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-xl shadow-lg text-white bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 transition-all duration-200 transform hover:-translate-y-0.5"
+              >
+                Get Started
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+              <Link
+                href="/rally-generator"
+                className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200 shadow-sm"
+              >
+                Explore Tools
+              </Link>
+            </div>
+          </div>
+
+          {/* Features Section */}
+          <div className="mb-16">
+            <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Why Choose Our Tools</h2>
+            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4"> {/* Changed to 4 columns */}
+              {features.map((feature) => {
+                const Icon = feature.icon
+                return (
+                  <div key={feature.name} className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow duration-200">
+                    <div className="flex items-center justify-center h-12 w-12 rounded-md bg-primary-100 text-primary-600 mb-4">
+                      <Icon className="h-6 w-6" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">{feature.name}</h3>
+                    <p className="text-gray-600 text-sm">{feature.description}</p> {/* Added text-sm for better fit */}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Tools Grid - Centered with 2 columns */}
+          <div className="flex justify-center">
+            <div className="grid gap-8 md:grid-cols-2 max-w-4xl">
+              {tools.map((tool) => {
+                const Icon = tool.icon
+                return (
+                  <div key={tool.name} className={`flex flex-col overflow-hidden rounded-2xl shadow-lg border ${tool.borderColor} ${tool.hoverColor} transition-all duration-200 hover:shadow-xl transform hover:-translate-y-1`}>
+                    <div className={`flex-shrink-0 ${tool.bgColor} p-8 flex justify-center`}>
+                      <div className="bg-white p-4 rounded-full shadow-inner">
+                        <Icon className={`h-12 w-12 ${tool.color}`} aria-hidden="true" />
+                      </div>
+                    </div>
+                    <div className="flex-1 bg-white p-6 flex flex-col justify-between">
+                      <div className="flex-1">
+                        <Link href={tool.href} className="block mt-2">
+                          <p className="text-xl font-semibold text-gray-900 text-center mb-3">{tool.name}</p>
+                          <p className="mt-3 text-base text-gray-600 text-center leading-relaxed">{tool.description}</p>
+                        </Link>
+                      </div>
+                      <div className="mt-6 text-center">
+                        <Link
+                          href={tool.href}
+                          className="inline-flex items-center text-sm font-medium text-primary-600 hover:text-primary-500 group"
+                        >
+                          Start building
+                          <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      </div>
+
+      {/* Footer - positioned at bottom */}
+      <footer className="mt-auto border-t border-gray-200 bg-white">
+        <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="flex items-center space-x-2 mb-4 md:mb-0">
+              <div className="bg-gradient-to-r from-primary-600 to-secondary-600 p-1.5 rounded-md">
+                <Sparkles className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-lg font-semibold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+                Grassroots Toolkit
+              </span>
+            </div>
+            <p className="text-sm text-gray-500">
+              &copy; {new Date().getFullYear()} Grassroots Digital Organizing Toolkit. All rights reserved.
+            </p>
+          </div>
+        </div>
       </footer>
     </div>
-  );
+  )
 }
