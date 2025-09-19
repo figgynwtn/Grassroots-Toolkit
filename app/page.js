@@ -56,11 +56,11 @@ export default function Home() {
           <div className="text-center mb-16 animate-fade-in">
             <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl md:text-6xl mb-6">
               <span className="block">Grassroots Digital</span>
-              <span className="block bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mt-2">
                 Organizing Toolkit
               </span>
             </h1>
-            <p className="mt-4 text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+            <p className="mt-6 text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4">
               Powerful tools designed to help nonprofits and community organizations amplify their message, 
               engage supporters, and drive meaningful change.
             </p>

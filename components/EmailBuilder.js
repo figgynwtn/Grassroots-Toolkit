@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Download, Eye, Settings, Palette, Type, Building, MousePointer } from 'lucide-react'
+import { Download, Eye, Settings, Palette, Type, Building, MousePointer, Copy, Mail } from 'lucide-react'
 
 export default function EmailBuilder() {
   const [template, setTemplate] = useState({
@@ -13,12 +13,99 @@ export default function EmailBuilder() {
     content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'
   })
 
+  const [showExportOptions, setShowExportOptions] = useState(false)
+
   const handleChange = (field, value) => {
     setTemplate(prev => ({ ...prev, [field]: value }))
   }
 
-  const handleExport = () => {
-    alert('Export functionality would be implemented here!')
+  const handleExport = (format) => {
+    const emailHTML = generateEmailHTML()
+    
+    switch(format) {
+      case 'download':
+        downloadHTML(emailHTML, 'email-template.html')
+        break
+      case 'copy':
+        copyToClipboard(emailHTML)
+        break
+      case 'email':
+        shareViaEmail(emailHTML)
+        break
+      default:
+        break
+    }
+    setShowExportOptions(false)
+  }
+
+  const generateEmailHTML = () => {
+    return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${template.organizationName}</title>
+  <style>
+    body { font-family: ${template.font}, sans-serif; margin: 0; padding: 20px; }
+    .container { max-width: 600px; margin: 0 auto; background: white; }
+    .header { text-align: center; color: ${template.primaryColor}; padding: 20px 0; }
+    .content { padding: 20px; line-height: 1.6; color: #333; }
+    .button { background-color: ${template.primaryColor}; color: white; padding: 12px 24px; 
+              text-decoration: none; border-radius: 8px; display: inline-block; }
+    .footer { padding: 20px; text-align: center; color: #666; font-size: 14px; border-top: 1px solid #eee; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>${template.organizationName}</h1>
+    </div>
+    <div class="content">
+      <p>${template.content}</p>
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="#" class="button">${template.ctaText}</a>
+      </div>
+    </div>
+    <div class="footer">
+      <p>© ${new Date().getFullYear()} ${template.organizationName}. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>`
+  }
+
+  const downloadHTML = (html, filename) => {
+    const blob = new Blob([html], { type: 'text/html' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
+  const copyToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      alert('HTML copied to clipboard!')
+    } catch (err) {
+      console.error('Failed to copy: ', err)
+      const textArea = document.createElement('textarea')
+      textArea.value = text
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textArea)
+      alert('HTML copied to clipboard!')
+    }
+  }
+
+  const shareViaEmail = (html) => {
+    const subject = `Email Template: ${template.organizationName}`
+    const body = `Here's the HTML email template:\n\n${html}`
+    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
   }
 
   const controlGroups = [
@@ -153,13 +240,42 @@ export default function EmailBuilder() {
             })}
           </div>
           
-          <button
-            onClick={handleExport}
-            className="mt-6 w-full flex justify-center items-center px-4 py-3 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 transition-all duration-200"
-          >
-            <Download className="h-5 w-5 mr-2" />
-            Export Template
-          </button>
+          {/* Export Button with Options */}
+          <div className="relative mt-6">
+            <button
+              onClick={() => setShowExportOptions(!showExportOptions)}
+              className="w-full flex justify-center items-center px-4 py-3 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 transition-all duration-200"
+            >
+              <Download className="h-5 w-5 mr-2" />
+              Export Template
+            </button>
+            
+            {showExportOptions && (
+              <div className="absolute bottom-full left-0 right-0 mb-2 bg-white border border-gray-200 rounded-xl shadow-lg z-10 p-2">
+                <button
+                  onClick={() => handleExport('download')}
+                  className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download HTML
+                </button>
+                <button
+                  onClick={() => handleExport('copy')}
+                  className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg"
+                >
+                  <Copy className="h-4 w-4 mr-2" />
+                  Copy HTML
+                </button>
+                <button
+                  onClick={() => handleExport('email')}
+                  className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg"
+                >
+                  <Mail className="h-4 w-4 mr-2" />
+                  Share via Email
+                </button>
+              </div>
+            )}
+          </div>
         </div>
         
         {/* Preview */}

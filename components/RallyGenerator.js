@@ -1,9 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Upload, Type, Image, MousePointer, Divide, Globe, Trash2, GripVertical } from 'lucide-react'
+import { Upload, Type, Image, MousePointer, Divide, Globe, Trash2, GripVertical, Download, Mail, FileText, Share2 } from 'lucide-react'
 
 export default function RallyGenerator() {
+  const [showExportOptions, setShowExportOptions] = useState(false)
   const [components, setComponents] = useState([])
   const [activeComponent, setActiveComponent] = useState(null)
   const [draggingOverTrash, setDraggingOverTrash] = useState(false)
@@ -89,8 +90,83 @@ export default function RallyGenerator() {
     ))
   }
 
-  const handlePublish = () => {
-    alert('Your rally page has been published! View at: https://rally.example.com/' + Date.now())
+  const handleExport = (format) => {
+    switch(format) {
+      case 'pdf':
+        exportAsPDF()
+        break
+      case 'html':
+        exportAsHTML()
+        break
+      case 'email':
+        shareViaEmail()
+        break
+      default:
+        break
+    }
+    setShowExportOptions(false)
+  }
+
+  const exportAsPDF = () => {
+    // This would use a library like jsPDF in a real implementation
+    alert('PDF export would be implemented here. In a real app, this would generate a PDF version of your rally page.')
+  }
+
+  const exportAsHTML = () => {
+    const rallyHTML = generateRallyHTML()
+    downloadHTML(rallyHTML, 'rally-page.html')
+  }
+
+  const generateRallyHTML = () => {
+    // Generate HTML based on the components
+    return `<!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Rally Page</title>
+    <style>
+      body { font-family: sans-serif; margin: 0; padding: 0; line-height: 1.6; }
+      .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+      .header { text-align: center; padding: 40px 0; }
+      .content { margin: 20px 0; }
+      .image-placeholder { background: #f3f4f6; padding: 60px; text-align: center; color: #6b7280; }
+      .form { background: #f9fafb; padding: 30px; border-radius: 8px; }
+      .button { background: #22c55e; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      ${components.map(comp => {
+        if (comp.type === 'header') return `<div class="header"><h1>${comp.text}</h1></div>`
+        if (comp.type === 'text') return `<div class="content"><p>${comp.content}</p></div>`
+        if (comp.type === 'image') return `<div class="image-placeholder">Image Placeholder</div>`
+        if (comp.type === 'form') return `<div class="form"><h3>Sign Up Form</h3><input type="email" placeholder="Email address"><button class="button">Subscribe</button></div>`
+        if (comp.type === 'divider') return `<hr style="margin: 30px 0; border: none; border-top: 1px solid #e5e7eb;">`
+        return ''
+      }).join('')}
+    </div>
+  </body>
+  </html>`
+  }
+
+  const shareViaEmail = () => {
+    const subject = 'Check out my rally page'
+    const body = 'I created a rally page using the Grassroots Toolkit!'
+    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+  }
+
+  // Add the downloadHTML function (same as in EmailBuilder)
+  const downloadHTML = (html, filename) => {
+    const blob = new Blob([html], { type: 'text/html' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = filename
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
   }
 
   const renderComponent = (comp, index) => {
@@ -320,13 +396,41 @@ export default function RallyGenerator() {
             </p>
           </div>
           
-          <button
-            onClick={handlePublish}
-            className="w-full flex justify-center items-center px-4 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-primary-600 hover:bg-primary-700"
-          >
-            <Globe className="h-5 w-5 mr-2" />
-            Publish Rally Page
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setShowExportOptions(!showExportOptions)}
+              className="w-full flex justify-center items-center px-4 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-primary-600 hover:bg-primary-700"
+            >
+              <Share2 className="h-5 w-5 mr-2" />
+              Export Page
+            </button>
+            
+            {showExportOptions && (
+              <div className="absolute bottom-full left-0 right-0 mb-2 bg-white border border-gray-200 rounded-xl shadow-lg z-10 p-2">
+                <button
+                  onClick={() => handleExport('pdf')}
+                  className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  Export as PDF
+                </button>
+                <button
+                  onClick={() => handleExport('html')}
+                  className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Download HTML
+                </button>
+                <button
+                  onClick={() => handleExport('email')}
+                  className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg"
+                >
+                  <Mail className="h-4 w-4 mr-2" />
+                  Share via Email
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
