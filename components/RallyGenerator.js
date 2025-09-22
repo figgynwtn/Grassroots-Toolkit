@@ -1,7 +1,9 @@
 'use client'
 
-import { useState } from 'react'
-import { Upload, Type, Image, MousePointer, Divide, Globe, Trash2, GripVertical, Download, Mail, FileText, Share2 } from 'lucide-react'
+import { useState, useRef } from 'react'
+import { Upload, Type, Image, MousePointer, Divide, Trash2, GripVertical, Download, Mail, FileText, Share2 } from 'lucide-react'
+import html2canvas from 'html2canvas'
+import jsPDF from 'jspdf'
 
 export default function RallyGenerator() {
   const [showExportOptions, setShowExportOptions] = useState(false)
@@ -9,6 +11,8 @@ export default function RallyGenerator() {
   const [activeComponent, setActiveComponent] = useState(null)
   const [draggingOverTrash, setDraggingOverTrash] = useState(false)
   const [dragOverIndex, setDragOverIndex] = useState(null)
+  const [isExporting, setIsExporting] = useState(false)
+  const canvasRef = useRef(null)
 
   const componentTypes = [
     { type: 'header', label: 'Header', icon: Type, default: { text: 'Page Header', size: 'xl' } },
@@ -72,7 +76,6 @@ export default function RallyGenerator() {
       const draggedComponent = components.find(comp => comp.id === parseInt(componentId))
       const filteredComponents = components.filter(comp => comp.id !== parseInt(componentId))
       
-      // Insert the dragged component at the new position
       const newComponents = [
         ...filteredComponents.slice(0, dropIndex),
         draggedComponent,
@@ -90,10 +93,10 @@ export default function RallyGenerator() {
     ))
   }
 
-  const handleExport = (format) => {
+  const handleExport = async (format) => {
     switch(format) {
       case 'pdf':
-        exportAsPDF()
+        await exportAsPDF()
         break
       case 'html':
         exportAsHTML()
@@ -107,9 +110,54 @@ export default function RallyGenerator() {
     setShowExportOptions(false)
   }
 
-  const exportAsPDF = () => {
-    // This would use a library like jsPDF in a real implementation
-    alert('PDF export would be implemented here. In a real app, this would generate a PDF version of your rally page.')
+  const exportAsPDF = async () => {
+    if (!canvasRef.current) {
+      alert('Please add some components to your page first.')
+      return
+    }
+
+    setIsExporting(true)
+    
+    try {
+      // Capture the canvas as an image
+      const canvas = await html2canvas(canvasRef.current, {
+        scale: 2, // Higher quality
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff'
+      })
+
+      // Create PDF
+      const imgData = canvas.toDataURL('image/png')
+      const pdf = new jsPDF('p', 'mm', 'a4')
+      const imgWidth = 210 // A4 width in mm
+      const pageHeight = 297 // A4 height in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width
+      
+      let heightLeft = imgHeight
+      let position = 0
+
+      // Add first page
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+      heightLeft -= pageHeight
+
+      // Add additional pages if content is longer than one page
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight
+        pdf.addPage()
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+        heightLeft -= pageHeight
+      }
+
+      // Download the PDF
+      pdf.save('rally-page.pdf')
+      
+    } catch (error) {
+      console.error('Error generating PDF:', error)
+      alert('Failed to generate PDF. Please try again.')
+    } finally {
+      setIsExporting(false)
+    }
   }
 
   const exportAsHTML = () => {
@@ -118,45 +166,97 @@ export default function RallyGenerator() {
   }
 
   const generateRallyHTML = () => {
-    // Generate HTML based on the components
     return `<!DOCTYPE html>
-  <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Rally Page</title>
-    <style>
-      body { font-family: sans-serif; margin: 0; padding: 0; line-height: 1.6; }
-      .container { max-width: 800px; margin: 0 auto; padding: 20px; }
-      .header { text-align: center; padding: 40px 0; }
-      .content { margin: 20px 0; }
-      .image-placeholder { background: #f3f4f6; padding: 60px; text-align: center; color: #6b7280; }
-      .form { background: #f9fafb; padding: 30px; border-radius: 8px; }
-      .button { background: #22c55e; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      ${components.map(comp => {
-        if (comp.type === 'header') return `<div class="header"><h1>${comp.text}</h1></div>`
-        if (comp.type === 'text') return `<div class="content"><p>${comp.content}</p></div>`
-        if (comp.type === 'image') return `<div class="image-placeholder">Image Placeholder</div>`
-        if (comp.type === 'form') return `<div class="form"><h3>Sign Up Form</h3><input type="email" placeholder="Email address"><button class="button">Subscribe</button></div>`
-        if (comp.type === 'divider') return `<hr style="margin: 30px 0; border: none; border-top: 1px solid #e5e7eb;">`
-        return ''
-      }).join('')}
-    </div>
-  </body>
-  </html>`
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rally Page</title>
+  <style>
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+      margin: 0; 
+      padding: 0; 
+      line-height: 1.6;
+      color: #333;
+      background-color: #f9fafb;
+    }
+    .container { 
+      max-width: 800px; 
+      margin: 0 auto; 
+      padding: 20px; 
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .header { 
+      text-align: center; 
+      padding: 40px 0; 
+      background: linear-gradient(135deg, #22c55e, #3b82f6);
+      color: white;
+      margin: -20px -20px 20px -20px;
+    }
+    .content { 
+      margin: 20px 0; 
+      padding: 0 20px;
+    }
+    .image-placeholder { 
+      background: #f3f4f6; 
+      padding: 60px; 
+      text-align: center; 
+      color: #6b7280;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    .form { 
+      background: #f9fafb; 
+      padding: 30px; 
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      margin: 20px 0;
+    }
+    .form input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    .button { 
+      background: #22c55e; 
+      color: white; 
+      padding: 12px 24px; 
+      border: none; 
+      border-radius: 6px; 
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    .button:hover {
+      background: #16a34a;
+    }
+    .divider {
+      border: none;
+      border-top: 1px solid #e5e7eb;
+      margin: 30px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    ${components.map(comp => {
+      if (comp.type === 'header') return `<div class="header"><h1>${comp.text}</h1></div>`
+      if (comp.type === 'text') return `<div class="content"><p>${comp.content}</p></div>`
+      if (comp.type === 'image') return `<div class="image-placeholder">Image Placeholder - Add your image here</div>`
+      if (comp.type === 'form') return `<div class="form"><h3>Sign Up Form</h3><input type="email" placeholder="Email address" required><button class="button">Subscribe</button></div>`
+      if (comp.type === 'divider') return `<hr class="divider">`
+      return ''
+    }).join('')}
+  </div>
+</body>
+</html>`
   }
 
-  const shareViaEmail = () => {
-    const subject = 'Check out my rally page'
-    const body = 'I created a rally page using the Grassroots Toolkit!'
-    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
-  }
-
-  // Add the downloadHTML function (same as in EmailBuilder)
   const downloadHTML = (html, filename) => {
     const blob = new Blob([html], { type: 'text/html' })
     const url = URL.createObjectURL(blob)
@@ -167,6 +267,13 @@ export default function RallyGenerator() {
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
+  }
+
+  const shareViaEmail = () => {
+    const rallyHTML = generateRallyHTML()
+    const subject = 'Check out my rally page'
+    const body = `I created a rally page using the Grassroots Toolkit!\n\nHere's the HTML content that you can use:\n\n${encodeURIComponent(rallyHTML)}`
+    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
   }
 
   const renderComponent = (comp, index) => {
@@ -360,6 +467,7 @@ export default function RallyGenerator() {
             <h2 className="text-lg font-medium text-gray-900 mb-4">Page Canvas</h2>
             
             <div
+              ref={canvasRef}
               onDrop={handleCanvasDrop}
               onDragOver={handleDragOver}
               className="border-2 border-dashed border-gray-300 rounded-lg p-6 min-h-[500px] bg-gray-50"
@@ -396,16 +504,27 @@ export default function RallyGenerator() {
             </p>
           </div>
           
+          {/* Export Button with Options */}
           <div className="relative">
             <button
               onClick={() => setShowExportOptions(!showExportOptions)}
-              className="w-full flex justify-center items-center px-4 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-primary-600 hover:bg-primary-700"
+              disabled={isExporting}
+              className="w-full flex justify-center items-center px-4 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
-              <Share2 className="h-5 w-5 mr-2" />
-              Export Page
+              {isExporting ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                  Generating PDF...
+                </>
+              ) : (
+                <>
+                  <Share2 className="h-5 w-5 mr-2" />
+                  Export Page
+                </>
+              )}
             </button>
             
-            {showExportOptions && (
+            {showExportOptions && !isExporting && (
               <div className="absolute bottom-full left-0 right-0 mb-2 bg-white border border-gray-200 rounded-xl shadow-lg z-10 p-2">
                 <button
                   onClick={() => handleExport('pdf')}
