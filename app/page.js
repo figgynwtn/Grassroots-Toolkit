@@ -54,32 +54,33 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Hero Section */}
           <div className="text-center mb-16 animate-fade-in">
-            <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl md:text-6xl mb-6">
-              <span className="block">Grassroots Digital</span>
-              <span className="block bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mt-2">
+            <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl md:text-6xl mb-4">
+              <span className="block leading-tight">Grassroots Digital</span>
+              <span className="block bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent leading-tight py-2">
                 Organizing Toolkit
               </span>
             </h1>
-            <p className="mt-6 text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4">
+            <p className="mt-8 text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4">
               Powerful tools designed to help nonprofits and community organizations amplify their message, 
               engage supporters, and drive meaningful change.
             </p>
-            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/email-builder"
-                className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-xl shadow-lg text-white bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 transition-all duration-200 transform hover:-translate-y-0.5"
+                className="inline-flex items-center justify-center px-8 py-4 border border-transparent text-base font-medium rounded-xl shadow-lg text-white bg-gradient-to-r from-primary-600 to-secondary-600 hover:from-primary-700 hover:to-secondary-700 transition-all duration-200 transform hover:-translate-y-0.5"
               >
                 Get Started
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
               <Link
                 href="/rally-generator"
-                className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200 shadow-sm"
+                className="inline-flex items-center justify-center px-8 py-4 border border-gray-300 text-base font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition-all duration-200 shadow-sm"
               >
                 Explore Tools
               </Link>
             </div>
           </div>
+
 
           {/* Features Section */}
           <div className="mb-16">
