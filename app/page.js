@@ -54,13 +54,15 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           {/* Hero Section */}
           <div className="text-center mb-16 animate-fade-in">
-            <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl md:text-6xl mb-4">
-              <span className="block leading-tight">Grassroots Digital</span>
-              <span className="block bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent leading-tight py-2">
-                Organizing Toolkit
-              </span>
-            </h1>
-            <p className="mt-8 text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4">
+            <div className="mb-8">
+              <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl md:text-6xl">
+                <span className="block">Grassroots Digital</span>
+                <span className="block bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mt-3 px-4">
+                  Organizing Toolkit
+                </span>
+              </h1>
+            </div>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4 mb-12">
               Powerful tools designed to help nonprofits and community organizations amplify their message, 
               engage supporters, and drive meaningful change.
             </p>
